@@ -51,6 +51,9 @@ func (log *logger) Event(event Event) {
 	for _, i := range log.Listeners {
 		i.Handle(event)
 	}
+	if event.Level >= CRITICAL {
+		panic(event.String())
+	}
 }
 
 func (log *logger) SetName(name string) {
