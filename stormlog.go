@@ -9,6 +9,9 @@ type Logger interface {
 	AddListener(listener EventListener)
 	Event(event Event)
 
+	SetName(name string)
+	Module(name string) Logger
+
 	Trace(v ...any)
 	Tracef(format string, v ...any)
 
@@ -30,11 +33,13 @@ type Logger interface {
 
 type logger struct {
 	Listeners []EventListener
+	moduleName string
 }
 
 func New() Logger {
 	return &logger{
 		Listeners: []EventListener{},
+		moduleName: "main",
 	}
 }
 
@@ -48,11 +53,20 @@ func (log *logger) Event(event Event) {
 	}
 }
 
+func (log *logger) SetName(name string) {
+	log.moduleName = name
+}
+
+func (log *logger) Module(name string) Logger {
+	return &logger{Listeners: log.Listeners, moduleName: name}
+}
+
 func (log *logger) makeEvent(level Level, message string) {
 	e := Event{
-		Level: level,
+		Level:     level,
+		Module:    log.moduleName,
 		Timestamp: time.Now(),
-		Message: message,
+		Message:   message,
 	}
 	log.Event(e)
 }
