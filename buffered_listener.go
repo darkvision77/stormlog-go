@@ -36,6 +36,15 @@ func (w *BufferedListener) runWorker() {
 	}
 }
 
-func (w *BufferedListener) Sync() {
+func (w *BufferedListener) Sync() error {
 	w.wg.Wait()
+	return nil
+}
+
+func (w *BufferedListener) Close() error {
+	err := w.Sync()
+	if err != nil {
+		return err
+	}
+	return w.Listener.Close()
 }
