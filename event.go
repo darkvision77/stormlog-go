@@ -17,5 +17,5 @@ type Event struct {
 }
 
 func (e Event) String() string {
-	return fmt.Sprintf("%s [%s] %s: %s", e.Timestamp.Format(time.RFC3339Nano), e.Level.String(), e.Module, e.Message)
+	return fmt.Sprintf("%s [%s] %s: %s", e.Timestamp.Format(RFC3339Nano), e.Level.String(), e.Module, e.Message)
 }
