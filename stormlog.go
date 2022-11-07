@@ -12,6 +12,9 @@ type Logger interface {
 	SetName(name string)
 	Module(name string) Logger
 
+	Sync() error
+	Close() error
+
 	Trace(v ...any)
 	Tracef(format string, v ...any)
 
@@ -62,6 +65,26 @@ func (log *logger) SetName(name string) {
 
 func (log *logger) Module(name string) Logger {
 	return &logger{Listeners: log.Listeners, moduleName: name}
+}
+
+func (log *logger) Sync() error {
+	for _, i := range log.Listeners {
+		err := i.Sync()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (log *logger) Close() error {
+	for _, i := range log.Listeners {
+		err := i.Close()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (log *logger) makeEvent(level Level, message string) {
