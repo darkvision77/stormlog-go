@@ -66,7 +66,7 @@ func (log *logger) Event(event Event) {
 		i.Handle(event)
 	}
 	if event.Level >= CRITICAL {
-		panic(event.String())
+		panic(event.Message)
 	}
 }
 
