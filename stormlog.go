@@ -2,6 +2,7 @@ package stormlog
 
 import (
 	"fmt"
+	"runtime/debug"
 	"time"
 )
 
@@ -14,6 +15,8 @@ type Logger interface {
 
 	Sync() error
 	Close() error
+
+	HandlePanic()
 
 	Trace(v ...any)
 	Tracef(format string, v ...any)
@@ -43,6 +46,14 @@ func New() Logger {
 	return &logger{
 		Listeners: []EventListener{},
 		moduleName: "main",
+	}
+}
+
+func (log *logger) HandlePanic() {
+	err := recover()
+	if err != nil {
+		log.Debugf("Stacktrace:\n%s", string(debug.Stack()))
+		log.Criticalf("Unhandled Exception: %v", err)
 	}
 }
 
