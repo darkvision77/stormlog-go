@@ -11,11 +11,11 @@ type Event struct {
 //	Id        int
 	Level     Level
 	Module    string
-//	Thread    int
+	Thread    int
 	Timestamp time.Time
 	Message   string
 }
 
 func (e Event) String() string {
-	return fmt.Sprintf("%s [%s] %s: %s", e.Timestamp.Format(RFC3339Nano), e.Level.String(), e.Module, e.Message)
+	return fmt.Sprintf("%s [%s] [%d] %s: %s", e.Timestamp.Format(RFC3339Nano), e.Level.String(), e.Thread, e.Module, e.Message)
 }
