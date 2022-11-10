@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"runtime/debug"
 	"time"
+
+	"github.com/darkvision77/stormlog-go/internal"
 )
 
 type Logger interface {
@@ -102,6 +104,7 @@ func (log *logger) makeEvent(level Level, message string) {
 	e := Event{
 		Level:     level,
 		Module:    log.moduleName,
+		Thread:    internal.GetGoroutineId(),
 		Timestamp: time.Now(),
 		Message:   message,
 	}
