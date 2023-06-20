@@ -2,6 +2,7 @@ package stormlog
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/darkvision77/stormlog-go/colors"
@@ -10,6 +11,7 @@ import (
 type TermWriter struct {
 	ColorsEnabled bool
 	ColorMap map[Level]colors.Color
+	Output io.Writer
 }
 
 func NewTermWriter(colorsEnabled bool) *TermWriter {
@@ -23,7 +25,13 @@ func NewTermWriter(colorsEnabled bool) *TermWriter {
 			ERROR:    colors.RED,
 			CRITICAL: colors.RED,
 		},
+		Output: nil,
 	}
+}
+
+func (w *TermWriter) WithOutput(out io.Writer) *TermWriter {
+	w.Output = out
+	return w
 }
 
 func (w *TermWriter) Handle(e Event) {
@@ -32,11 +40,13 @@ func (w *TermWriter) Handle(e Event) {
 		s = colors.Colorize(s, w.ColorMap[e.Level])
 	}
 
-	if e.Level >= WARNING {
-		fmt.Fprintln(os.Stderr, s)
-	} else {
-		fmt.Fprintln(os.Stdout, s)
+	var out io.Writer = os.Stdout
+	if w.Output != nil {
+		out = w.Output
+	} else if e.Level >= WARNING {
+		out = os.Stderr
 	}
+	fmt.Fprintln(out, s)
 }
 
 func (w *TermWriter) Sync() error {
