@@ -15,8 +15,7 @@ type TermWriter struct {
 }
 
 func NewTermWriter(colorsEnabled bool) *TermWriter {
-	return &TermWriter{
-		colorsEnabled: colorsEnabled,
+	w := &TermWriter{
 		ColorMap: map[Level]colors.Color{
 			TRACE:    colors.GRAY,
 			DEBUG:    colors.WHITE,
@@ -27,6 +26,8 @@ func NewTermWriter(colorsEnabled bool) *TermWriter {
 		},
 		Output: nil,
 	}
+	w.SetColorsEnabled(colorsEnabled)
+	return w
 }
 
 func (w *TermWriter) SetColorsEnabled(enabled bool) {
