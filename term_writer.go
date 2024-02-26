@@ -9,14 +9,14 @@ import (
 )
 
 type TermWriter struct {
-	ColorsEnabled bool
+	colorsEnabled bool
 	ColorMap map[Level]colors.Color
 	Output io.Writer
 }
 
 func NewTermWriter(colorsEnabled bool) *TermWriter {
 	return &TermWriter{
-		ColorsEnabled: colorsEnabled,
+		colorsEnabled: colorsEnabled,
 		ColorMap: map[Level]colors.Color{
 			TRACE:    colors.GRAY,
 			DEBUG:    colors.WHITE,
@@ -29,6 +29,13 @@ func NewTermWriter(colorsEnabled bool) *TermWriter {
 	}
 }
 
+func (w *TermWriter) SetColorsEnabled(enabled bool) {
+	w.colorsEnabled = enabled
+	if enabled {
+		_ = colors.InitColors() // TODO: error handling?
+	}
+}
+
 func (w *TermWriter) WithOutput(out io.Writer) *TermWriter {
 	w.Output = out
 	return w
@@ -36,7 +43,7 @@ func (w *TermWriter) WithOutput(out io.Writer) *TermWriter {
 
 func (w *TermWriter) Handle(e Event) {
 	s := e.String()
-	if w.ColorsEnabled {
+	if w.colorsEnabled {
 		s = colors.Colorize(s, w.ColorMap[e.Level])
 	}
 
